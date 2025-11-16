@@ -1,0 +1,314 @@
+# Modelo de docker-compose.yml com (quase) todas as opções possíveis.
+# Tudo está comentado — descomente as chaves que precisar e ajuste valores.
+# Observações:
+# - Algumas opções pertencem a versões específicas do Compose (v2.x, v3.x, Swarm, etc.).
+# - Se usar Docker Compose V2 (plugin `docker compose`), a chave "version" é opcional.
+# - Muitos campos em "deploy" só têm efeito no modo swarm (docker stack deploy).
+# - Comentários explicativos em português ao lado de cada opção.
+#
+# Exemplo de uso:
+# 1) Copie este arquivo para o seu projeto.
+# 2) Descomente e ajuste apenas as partes que precisa.
+# 3) Rode: docker compose up -d
+#
+# ---------------------------------------------------------
+# Versão do formato de compose (opcional em Compose V2)
+#version: "3.8"
+#
+# Top-level: definições de serviços
+#services:
+#  meu-servico:                       # nome do serviço (identificador local)
+#    # Imagem a usar
+#    #image: "nginx:1.25"             # imagem já buildada no registry
+#
+#    # Build a partir de um diretório/local
+#    #build:                          # build context (pode ser string ou objeto)
+#    #  context: ./app                # caminho para o Dockerfile e contexto
+#    #  dockerfile: Dockerfile.custom # nome do Dockerfile (opcional)
+#    #  args:                         # build args
+#    #    NODE_ENV: production
+#    #  target: builder               # estágio multi-stage target
+#    #  cache_from:                   # imagens para usar como cache
+#    #    - myregistry/app:cache
+#    #  shm_size: "1g"                # shared memory size para build
+#
+#    # Nome do container (se quiser fixo)
+#    #container_name: "meu-servico-container"
+#
+#    # Comando e entrypoint
+#    #command: ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+#    #entrypoint: ["/tini", "--"]
+#
+#    # Diretório de trabalho
+#    #working_dir: /usr/src/app
+#
+#    # Usuário e permissões
+#    #user: "1000:1000"               # UID: GID ou nome
+#
+#    # Reinício automático
+#    #restart: "unless-stopped"      # no|on-failure[:max-retries]|always|unless-stopped
+#
+#    # Dependências de inicialização entre serviços
+#    #depends_on:
+#    #  - outro-servico
+#    #  # Forma com condição (apenas v2.1): requires service healthy option
+#    #  #depends_on:
+#    #  #  banco:
+#    #  #    condition: service_healthy
+#
+#    # Exposição de portas
+#    #ports:
+#    #  - "80:80"                     # "host:container[:protocol]"
+#    #  - target: 443
+#    #    published: 8443
+#    #    protocol: tcp
+#    #    mode: host
+#
+#    # Expor porta apenas para outros serviços (sem publish para host)
+#    #expose:
+#    #  - "3000"
+#
+#    # Variáveis de ambiente (duas formas)
+#    #env_file:
+#    #  - ./envs/common.env
+#    #  - ./envs/secret.env
+#    #environment:
+#    #  RAILS_ENV: production
+#    #  DATABASE_URL: "postgres://user:pass@banco:5432/db"
+#    #  - "SOME_VAR=valor"             # lista também é aceita
+#
+#    # Labels (metadados)
+#    #labels:
+#    #  com.example.description: "Meu serviço"
+#    #  - "traefik.enable=true"
+#
+#    # Montagens de volume (duas formas: curta e longa)
+#    #volumes:
+#    #  - ./data:/var/lib/data:rw
+#    #  - my_named_volume:/var/lib/data:ro
+#    #  - type: bind
+#    #    source: ./config
+#    #    target: /etc/config
+#    #    read_only: true
+#    #  - type: volume
+#    #    source: cache-volume
+#    #    target: /root/.cache
+#    #    volume:
+#    #      nocopy: true
+#
+#    # Configs e Secrets (long syntax)
+#    #configs:
+#    #  - source: my_config
+#    #    target: /etc/my_app/config.yaml
+#    #    uid: "0"
+#    #    gid: "0"
+#    #    mode: 0440
+#    #secrets:
+#    #  - source: my_secret
+#    #    target: db_password
+#    #    uid: "0"
+#    #    gid: "0"
+#    #    mode: 0400
+#
+#    # Rede(s) do serviço (com aliases)
+#    #networks:
+#    #  - frontend
+#    #  - backend:
+#    #      aliases:
+#    #        - alias-db
+#
+#    # Logging
+#    #logging:
+#    #  driver: "json-file"            # winlog, syslog, fluentd, awslogs, gelf, journald...
+#    #  options:
+#    #    max-size: "10m"
+#    #    max-file: "3"
+#
+#    # Saúde do container
+#    #healthcheck:
+#    #  test: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"]
+#    #  interval: 30s
+#    #  timeout: 10s
+#    #  retries: 3
+#    #  start_period: 40s
+#
+#    # Reiniciar política do sistema (aplicável ao deploy no Swarm)
+#    #stop_grace_period: 1m30s
+#    #stop_signal: SIGTERM
+#
+#    # Outros recursos e configurações de runtime
+#    #stdin_open: true
+#    #tty: true
+#    #extra_hosts:
+#    #  - "host.docker.internal:host-gateway"
+#    #dns:
+#    #  - 8.8.8.8
+#    #dns_search:
+#    #  - example.com
+#    #oom_kill_disable: true
+#    #oom_score_adj: -1000
+#    #sysctls:
+#    #  net.core.somaxconn: "511"
+#    #init: true
+#
+#    # Recursos de cgroup (somente em algumas versões/hosts)
+#    #cpu_count: 2
+#    #cpu_percent: 50
+#    #cpu_shares: 1024
+#    #cpus: "1.5"
+#    #cpu_quota: 150000
+#    #cpuset: "0-3"
+#    #mem_limit: 512m
+#    #mem_reservation: 256m
+#    #memswap_limit: 1g
+#
+#    # Capabilities e dispositivos
+#    #cap_add:
+#    #  - NET_ADMIN
+#    #cap_drop:
+#    #  - MKNOD
+#    #devices:
+#    #  - "/dev/snd:/dev/snd"
+#
+#    # Security options
+#    #security_opt:
+#    #  - seccomp:unconfined
+#    #  - apparmor:unconfined
+#
+#    # IPC / PID namespace sharing
+#    #ipc: shareable
+#    #pid: host
+#
+#    # tmpfs mounts
+#    #tmpfs:
+#    #  - /run
+#    #  - /tmp:uid=1000,gid=1000,mode=1777
+#
+#    # isolation (Windows)
+#    #isolation: "process" # or "hyperv"
+#
+#    # profile (incluir esse serviço apenas para perfis nomeados)
+#    #profiles:
+#    #  - "dev"
+#
+#    # runtime (ex.: nvidia)
+#    #runtime: nvidia
+#
+#    # container health / life-cycle hooks (não nativo - ilustrativo)
+#    #on-failure-restart: 3         # (use restart: on-failure:3)
+#
+#    # Exemplo de comentário sobre mode de deploy (apenas swarm)
+#    #deploy:
+#    #  mode: replicated
+#    #  replicas: 3
+#    #  endpoint_mode: vip
+#    #  labels:
+#    #    - "traefik.enable=true"
+#    #  resources:
+#    #    limits:
+#    #      cpus: "0.50"
+#    #      memory: 512M
+#    #    reservations:
+#    #      cpus: "0.25"
+#    #      memory: 256M
+#    #  placement:
+#    #    constraints:
+#    #      - node.role == manager
+#    #    preferences:
+#    #      - spread: node.labels.datacenter
+#    #  update_config:
+#    #    parallelism: 2
+#    #    delay: 10s
+#    #    failure_action: rollback
+#    #  rollback_config:
+#    #    parallelism: 1
+#    #    delay: 5s
+#
+#    # exemplo de bind-mount readonly com propagation (Linux)
+#    #volumes:
+#    #  - type: bind
+#    #    source: /mnt/data
+#    #    target: /data
+#    #    bind:
+#    #      propagation: rprivate
+#
+#    # fim do serviço 'meu-servico'
+#
+#  # outro-servico:
+#  #   ...
+#
+# ---------------------------------------------------------
+# Top-level volumes (definição de volumes nomeados)
+#volumes:
+#  my_named_volume:
+#    driver: local
+#    driver_opts:
+#      type: "nfs"
+#      o: "addr=10.0.0.1,rw"
+#      device: ":/path/to/dir"
+#    labels:
+#      - "com.example.description=volume de dados"
+#    external: false    # se true, espera volume já criado
+#    name: custom_volume_name
+#
+# ---------------------------------------------------------
+# Top-level networks
+#networks:
+#  frontend:
+#    driver: bridge
+#    driver_opts:
+#      com.docker.network.bridge.name: br0
+#    ipam:
+#      driver: default
+#      config:
+#        - subnet: 172.16.238.0/24
+#          gateway: 172.16.238.1
+#          ip_range: 172.16.238.0/25
+#          aux_addresses:
+#            host1: 172.16.238.10
+#  backend:
+#    driver: overlay
+#    external: false
+#
+# ---------------------------------------------------------
+# Configs (Swarm and Compose v3.3+)
+#configs:
+#  my_config:
+#    file: ./config/app.conf
+#    external: false
+#
+# ---------------------------------------------------------
+# Secrets (Swarm and Compose v3.1+)
+#secrets:
+#  my_secret:
+#    file: ./secrets/db_password.txt
+#    external: false
+#
+# ---------------------------------------------------------
+# Extensões X- (anchors/templates reutilizáveis)
+#x-common-logging: &common_logging
+#  driver: "json-file"
+#  options:
+#    max-size: "5m"
+#    max-file: "2"
+#
+# Exemplo de uso de âncora:
+#services:
+#  app:
+#    image: myapp
+#    logging: *common_logging
+#
+# ---------------------------------------------------------
+# Exemplo de como referenciar um secret/config dentro do serviço:
+#services:
+#  db:
+#    image: postgres:15
+#    secrets:
+#      - source: my_secret
+#        target: pg_password
+#    configs:
+#      - source: my_config
+#        target: /etc/postgresql/conf.d/custom.conf
+#
+# ---------------------------------------------------------
+# End of template

@@ -1,0 +1,147 @@
+# docker-compose.yml — Minecraft server compose personalizado
+# autor: @caiosimioni
+# data: 2025-11-16
+# descrição: Compose minimal funcional para o servidor Minecraft com comentários e seções.
+#
+# Observações:
+# - Este arquivo usa sintaxe compatível com Docker Compose v2/v3.
+# - Ajuste variáveis de ambiente, volumes e portas conforme necessário.
+# ---------------------------------------------------------
+
+# (opcional) Versão do formato (pode ser omitida ao usar docker compose v2)
+#version: "3.8"
+
+# ===========================
+# SESSÃO: METADATA / HEADER
+# ===========================
+#Informações gerais e banners ASCII para identificação visual do arquivo.
+# Você pode editar autor/data conforme preferir.
+# ASCII art (serviço principal: MC)
+#
+#⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀
+#⠀⠀⠀⠀⠀⠀⠀⢰⣶⡎⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⢱⣶⣶⣶⣶⣶⣶⡆⠀⠀
+#⠀⠀⠀⠀⠀⠀⠀⠘⠛⢣⣤⣤⣤⣤⣤⣤⣤⣤⡄⠀⠈⠛⠛⠛⠛⣿⣿⡇⠀⠀
+#⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠛⠛⠛⠛⠛⠛⠛⠛⢣⣤⡄⠀⠀⠀⠀⣿⣿⡇⠀⠀
+#⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⡸⠿⢇⣀⣀⠀⠀⠻⠿⢃⣀⡀
+#⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⠿⠿⢇⣀⡸⠿⠿⣀⣀⠀⠀⢸⣿⡇
+#⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⠀⠀⢸⣿⡇⠀⠀⣿⣿⠀⠀⢸⣿⡇
+#⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⠀⠀⣿⣿⡇⠀⠀⠀⠀⣿⣿⠀⠀⢸⣿⡇
+#⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⡇⠀⠀⣿⣿⠀⠀⠀⠀⠀⠀⠀⣿⣿⠀⠀⢸⣿⡇
+#⠀⠀⠀⠀⠀⠀⠀⢰⣶⡎⠉⠱⣶⣶⠉⠉⠀⠀⠀⠀⠀⠀⠀⣿⣿⠀⠀⢸⣿⡇
+#⠀⠀⠀⠀⠀⣶⣶⡌⠉⢱⣶⡆⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⣴⣶⡎⠉⠁
+#⠀⠀⠀⣤⣤⠛⠛⢡⣤⡜⠛⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠛⠛⠃⠀⠀
+#⢀⣤⣤⠛⠛⣤⣤⡘⠛⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+#⢸⣿⣿⣀⣀⠿⠿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+#⠸⠿⠿⠿⠿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+# ---------------------------------------------------------
+
+services:
+  # ===========================
+  # SESSÃO: SERVIÇOS - Minecraft
+  # Nome lógico do serviço (usado pelo compose)
+  # ===========================
+  mc:
+    # Nome do container no Docker (fixo)
+    container_name: mc-atm10-sky
+
+    # Imagem oficial utilizada (itzg/minecraft-server)
+    image: itzg/minecraft-server:latest
+
+    # Exposição de portas (host:container)
+    ports:
+      - "25565:25565"   # porta padrão do Minecraft (TCP/UDP)
+
+    # Variáveis de ambiente principais
+    environment:
+      # CORREÇÕES / NOTAS:
+      # - TYPE deve ser "CUSTOM" quando você usa um script/custom server jar.
+      # - CUSTOM_SERVER aponta para o script/jar dentro do container (p.ex. /data/run.sh).
+      TYPE: "CUSTOM"
+
+      # A variável CUSTOM_SERVER define o comando/script personalizado de inicialização.
+      CUSTOM_SERVER: "/data/run.sh"
+
+      # Aceitar EULA (obrigatório para iniciar o server)
+      EULA: "TRUE"
+
+      # Memória atribuída ao servidor Minecraft (ex.: "4G", "2048M")
+      MEMORY: "4G"
+
+      # Exemplos de variáveis adicionais (comente/descomente conforme necessário):
+      # JVM_OPTS: "-Xms2G -Xmx4G"
+      # MOTD: "Servidor ATM10 Sky - Bem vindo!"
+      # OPS: "SteamUser1,SteamUser2"
+
+    # Montagens: bind-mount para persistência de dados
+    volumes:
+      # Mapeia a pasta local ./minecraft-data para /data no container (RW por padrão)
+      - ./minecraft-data:/data
+
+      # Exemplo (opcional) de volume nomeado:
+      # - mc-backups:/backups
+
+    # Política de reinício
+    restart: unless-stopped
+
+    # (opcional) Configurações de saúde
+    #healthcheck:
+    #  test: ["CMD-SHELL", "pgrep -f java || exit 1"]
+    #  interval: 30s
+    #  timeout: 10s
+    #  retries: 3
+    #  start_period: 60s
+
+    # (opcional) Limites de recursos (ajuste conforme host)
+    #deploy:
+    #  resources:
+    #    limits:
+    #      cpus: "1.5"
+    #      memory: 6G
+
+    # (opcional) Labels úteis (p.ex. para Traefik ou monitoramento)
+    #labels:
+    #  - "com.example.owner=@caiosimioni"
+    #  - "com.example.project=mc-atm10"
+
+# ===========================
+# SESSÃO: VOLUMES (opcional)
+# ===========================
+# Defina volumes nomeados aqui se preferir usá-los em vez de bind mounts.
+# Volumes nomeados são gerenciados pelo Docker e ficam em /var/lib/docker/volumes
+#
+# Exemplo:
+#volumes:
+#  mc-backups:
+#    driver: local
+#    driver_opts:
+#      o: "bind"
+#      type: "none"
+#      device: ./backups
+
+# ===========================
+# SESSÃO: NETWORKS (opcional)
+# ===========================
+# Defina redes customizadas se precisar isolar serviços ou controlar subnets.
+# Exemplo:
+#networks:
+#  mc-net:
+#    driver: bridge
+#    ipam:
+#      config:
+#        - subnet: "172.28.0.0/16"
+
+# ===========================
+# SESSÃO: NOTAS & BACKUPS
+# ===========================
+# - O diretório ./minecraft-data deve existir e possuir permissões corretas.
+# - Se seu /data/run.sh é um script custom, garanta que ele esteja no host e
+#   dentro de ./minecraft-data com permissão de execução (chmod +x ./minecraft-data/run.sh).
+# - Para criar um backup simples:
+#     tar -czf mc-data-backup-$(date +%F).tgz ./minecraft-data
+#
+# - Para iniciar:
+#     docker compose up -d
+#   ou (se estiver usando docker-compose v1)
+#     docker-compose up -d
+#
+# Fim do arquivo.
